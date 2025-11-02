@@ -1,25 +1,17 @@
-// ===========================
-// 🌐 GLOBAL FUNCTIONS
-// ===========================
-
-// View ad details
+// ============ GLOBAL FUNCTIONS ============
 function viewAd(id) {
   window.location.href = `productDetails.html?id=${id}`;
 }
 
-// ===========================
-// 📢 LOAD ALL ADS (Homepage)
-// ===========================
+// ============ LOAD ALL ADS ============
 async function loadAds(containerId = "adsList", userId = null) {
   try {
     const res = await fetch("/api/ads");
     const ads = await res.json();
-
     const container = document.getElementById(containerId);
     if (!container) return;
 
     container.innerHTML = "";
-
     const filtered = userId ? ads.filter(ad => ad.user_id == userId) : ads;
 
     if (filtered.length === 0) {
@@ -45,9 +37,7 @@ async function loadAds(containerId = "adsList", userId = null) {
   }
 }
 
-// ===========================
-// 🧾 LOAD SINGLE PRODUCT DETAILS
-// ===========================
+// ============ PRODUCT DETAILS ============
 async function loadProductDetails() {
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
@@ -70,124 +60,76 @@ async function loadProductDetails() {
   }
 }
 
-// ===========================
-// 🗑️ DELETE AD
-// ===========================
-async function deleteAd(id) {
-  if (!confirm("Are you sure you want to delete this ad?")) return;
-  try {
-    const res = await fetch("/api/ads", {
-      method: "DELETE",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id })
-    });
-    const data = await res.json();
-    alert(data.message || "Deleted");
-    location.reload();
-  } catch (err) {
-    console.error("Error deleting ad:", err);
+// ============ SIGNUP HANDLER ============
+async function handleSignup(e) {
+  e.preventDefault();
+  const name = document.getElementById("signupName").value;
+  const email = document.getElementById("signupEmail").value;
+  const password = document.getElementById("signupPassword").value;
+
+  const res = await fetch("/api/auth/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ name, email, password }),
+  });
+
+  const data = await res.json();
+  if (res.ok && data.recovery_code) {
+    showRecoveryPopup(data.recovery_code);
+  } else {
+    alert(data.error || "Signup failed");
   }
 }
 
-// ===========================
-// 👤 AUTH: SIGNUP
-// ===========================
-async function handleSignup(event) {
-  event.preventDefault();
-  const form = event.target;
-  const name = form.querySelector("#signup_name")?.value.trim();
-  const email = form.querySelector("#signup_email")?.value.trim();
-  const password = form.querySelector("#signup_password")?.value.trim();
-  const phone = form.querySelector("#signup_phone")?.value.trim() || "";
-  const gender = form.querySelector("#signup_gender")?.value || "";
+// ============ LOGIN HANDLER ============
+async function handleLogin(e) {
+  e.preventDefault();
+  const email = document.getElementById("loginEmail").value;
+  const password = document.getElementById("loginPassword").value;
 
-  try {
-    const res = await fetch("/api/auth/signup", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, email, password, phone, gender }),
-    });
+  const res = await fetch("/api/auth/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
 
-    const data = await res.json();
-
-    if (res.ok) {
-      alert(`✅ ${data.message}\n\n⚠️ Your Recovery Code:\n${data.recovery_code}\n\nSave it safely — it's shown only once!`);
-      form.reset();
-    } else {
-      alert(data.error || "Signup failed");
-    }
-  } catch (err) {
-    console.error("Signup error:", err);
-    alert("Error signing up.");
+  const data = await res.json();
+  if (res.ok && data.user) {
+    localStorage.setItem("user", JSON.stringify(data.user));
+    window.location.href = "dashboard.html";
+  } else {
+    alert(data.error || "Login failed");
   }
 }
 
-// ===========================
-// 🔐 AUTH: LOGIN
-// ===========================
-async function handleLogin(event) {
-  event.preventDefault();
-  const form = event.target;
-  const email = form.querySelector("#login_email")?.value.trim();
-  const password = form.querySelector("#login_password")?.value.trim();
+// ============ RECOVERY POPUP ============
+function showRecoveryPopup(code) {
+  const overlay = document.createElement("div");
+  overlay.style = `
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7); display: flex;
+    align-items: center; justify-content: center; z-index: 1000;
+  `;
+  overlay.innerHTML = `
+    <div style="background:#fff; padding:20px; border-radius:10px; text-align:center; max-width:350px;">
+      <h2 style="color:#ff9800;">⚠️ Important!</h2>
+      <p style="margin:10px 0;">Your recovery code (save it safely):</p>
+      <div style="font-weight:bold; font-size:18px; margin:10px 0; color:#333;">${code}</div>
+      <p style="color:red; font-size:14px;">You will not see this code again.</p>
+      <button id="copyBtn">Copy Code</button>
+      <button id="okBtn" style="margin-left:10px;">I Saved It</button>
+    </div>
+  `;
+  document.body.appendChild(overlay);
 
-  try {
-    const res = await fetch("/api/auth/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert("✅ Login successful!");
-      localStorage.setItem("user", JSON.stringify(data.user));
-      window.location.href = "dashboard.html";
-    } else {
-      alert(data.error || "Login failed");
-    }
-  } catch (err) {
-    console.error("Login error:", err);
-    alert("Error logging in.");
-  }
+  document.getElementById("copyBtn").onclick = () => {
+    navigator.clipboard.writeText(code);
+    alert("Recovery code copied!");
+  };
+  document.getElementById("okBtn").onclick = () => overlay.remove();
 }
 
-// ===========================
-// 🔄 AUTH: PASSWORD RESET
-// ===========================
-async function handlePasswordReset(event) {
-  event.preventDefault();
-  const form = event.target;
-  const email = form.querySelector("#reset_email")?.value.trim();
-  const recovery_code = form.querySelector("#reset_code")?.value.trim();
-  const new_password = form.querySelector("#reset_password")?.value.trim();
-
-  try {
-    const res = await fetch("/api/auth/reset", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, recovery_code, new_password }),
-    });
-
-    const data = await res.json();
-
-    if (res.ok) {
-      alert(`✅ ${data.message}\n\n⚠️ Your new recovery code:\n${data.new_recovery_code}\n\nSave it safely — it's shown only once!`);
-      form.reset();
-      window.location.href = "login.html";
-    } else {
-      alert(data.error || "Password reset failed");
-    }
-  } catch (err) {
-    console.error("Password reset error:", err);
-    alert("Error resetting password.");
-  }
-}
-
-// ===========================
-// ⚙️ PAGE INIT
-// ===========================
+// ============ INIT ============
 document.addEventListener("DOMContentLoaded", () => {
   const path = window.location.pathname;
 
@@ -200,14 +142,8 @@ document.addEventListener("DOMContentLoaded", () => {
     loadAds("adsList");
   }
 
-  // Auto-attach event listeners if forms exist
   const signupForm = document.getElementById("signupForm");
-  if (signupForm) signupForm.addEventListener("submit", handleSignup);
-
   const loginForm = document.getElementById("loginForm");
+  if (signupForm) signupForm.addEventListener("submit", handleSignup);
   if (loginForm) loginForm.addEventListener("submit", handleLogin);
-
-  // 👇 Corrected this: use forgot-password.html form
-  const forgotForm = document.getElementById("forgotPasswordForm");
-  if (forgotForm) forgotForm.addEventListener("submit", handlePasswordReset);
 });
