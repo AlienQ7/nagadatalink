@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dashboard | Alien Marketplace</title>
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    :root {
+      --bg: #0A0A0A;
+      --fg: #E8EDF0;
+      --acc: #FF8000;
+      --acc-low: #362200;
+      --success: #00A36C;
+      --danger: #CC3333;
+      --border: #1A1A1A;
+    }
+
+    body {
+      background: radial-gradient(circle at center top, #111111 0%, #000000 70%);
+      color: var(--fg);
+      font-family: 'Space Mono', monospace;
+      margin: 0;
+      padding: 0;
+      min-height: 100vh;
+    }
+
+    header {
+      background-color: var(--bg);
+      color: var(--acc);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 25px;
+      border-bottom: 3px solid var(--acc);
+      box-shadow: 0 0 15px var(--acc);
+    }
+
+    header h1 {
+      font-size: 1.5em;
+      letter-spacing: 1px;
+    }
+
+    .logout-btn {
+      background: none;
+      color: var(--fg);
+      border: 2px solid var(--acc);
+      padding: 8px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background-color: var(--acc-low);
+      box-shadow: 0 0 10px var(--acc);
+    }
+
+    main {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .profile-card {
+      background: var(--bg);
+      border: 2px solid var(--acc);
+      box-shadow: 0 0 10px var(--acc);
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 500px;
+      width: 90%;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .profile-card h2 {
+      color: var(--acc);
+    }
+
+    .stats-section {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 700px;
+    }
+
+    .stat-box {
+      background: var(--bg);
+      border: 2px solid var(--acc);
+      box-shadow: 0 0 10px var(--acc);
+      padding: 20px;
+      border-radius: 10px;
+      text-align: center;
+      flex: 1 1 200px;
+      min-width: 200px;
+    }
+
+    .stat-box h3 {
+      color: var(--acc);
+      margin-bottom: 10px;
+    }
+
+    @media (max-width: 768px) {
+      header {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .stats-section {
+        flex-direction: column;
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Alien Marketplace Dashboard</h1>
+    <button class="logout-btn" onclick="logout()">Logout</button>
+  </header>
+
+  <main>
+    <div class="profile-card">
+      <h2 id="username">Loading...</h2>
+      <p id="useremail"></p>
+    </div>
+
+    <section class="stats-section">
+      <div class="stat-box">
+        <h3>Active Listings</h3>
+        <p id="activeListings">0</p>
+      </div>
+      <div class="stat-box">
+        <h3>Sold Items</h3>
+        <p id="soldItems">0</p>
+      </div>
+      <div class="stat-box">
+        <h3>Account Rank</h3>
+        <p id="rank">Beginner</p>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    async function loadUserData() {
+      try {
+        const res = await fetch("/api/user", { method: "GET" });
+        if (!res.ok) throw new Error("Failed to load profile");
+        const data = await res.json();
+
+        document.getElementById("username").textContent = data.username || "User";
+        document.getElementById("useremail").textContent = data.email || "";
+        document.getElementById("activeListings").textContent = data.activeListings || 0;
+        document.getElementById("soldItems").textContent = data.soldItems || 0;
+        document.getElementById("rank").textContent = data.rank || "Beginner";
+      } catch (err) {
+        alert("Error loading user data.");
+      }
+    }
+
+    function logout() {
+      localStorage.removeItem("authToken");
+      window.location.href = "index.html";
+    }
+
+    loadUserData();
+  </script>
+</body>
+</html>
