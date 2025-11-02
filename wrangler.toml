@@ -1,0 +1,14 @@
+name = "nagadatalink"
+pages_build_output_dir = "public"
+compatibility_date = "2025-11-02"
+
+# --- D1 Database Binding (for storing ads) ---
+[[d1_databases]]
+binding = "DB"
+database_name = "iotbase"
+database_id = "a948ab60-a672-4429-b6ee-eed6d0bad533"
+
+# --- KV Namespace Binding (for caching / metadata) ---
+[[kv_namespaces]]
+binding = "CACHE_KV"
+id = "693ecc94f12c427d9440bee38f13112d"
