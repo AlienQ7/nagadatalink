@@ -10,5 +10,5 @@ database_id = "a948ab60-a672-4429-b6ee-eed6d0bad533"
 
 # --- KV Namespace Binding (for caching / metadata) ---
 [[kv_namespaces]]
-binding = "CACHE_KV"
+binding = "USERS_KV"
 id = "693ecc94f12c427d9440bee38f13112d"
