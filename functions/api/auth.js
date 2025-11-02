@@ -1,3 +1,4 @@
+const SECRET = env.JWT_SECRET;
 export async function onRequestPost({ request, env }) {
   const data = await request.json();
   const { email, phone, name, gender } = data;
