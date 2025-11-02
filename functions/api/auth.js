@@ -1,31 +1,26 @@
 export async function onRequestPost({ request, env }) {
-  try {
-    const data = await request.json();
-    const { username, password, mode } = data; // mode = "register" or "login"
+  const data = await request.json();
+  const { email, phone, name, gender } = data;
 
-    if (!username || !password || !mode)
-      return new Response("Missing fields", { status: 400 });
-
-    const userKey = `user:${username}`;
-    const existing = await env.USERS_KV.get(userKey);
-
-    if (mode === "register") {
-      if (existing)
-        return new Response(JSON.stringify({ error: "User already exists" }), { status: 400 });
-
-      await env.USERS_KV.put(userKey, password);
-      return new Response(JSON.stringify({ success: true, message: "Registered" }));
-    }
-
-    if (mode === "login") {
-      if (!existing || existing !== password)
-        return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401 });
-
-      return new Response(JSON.stringify({ success: true, message: "Logged in" }));
-    }
-
-    return new Response("Invalid mode", { status: 400 });
-  } catch (err) {
-    return new Response(JSON.stringify({ error: err.message }), { status: 500 });
+  if (!email || !phone) {
+    return new Response(JSON.stringify({ error: "Missing fields" }), {
+      headers: { "Content-Type": "application/json" },
+      status: 400,
+    });
   }
+
+  const userKey = `user:${email}`;
+  const existing = await env.USERS_KV.get(userKey, { type: "json" });
+
+  if (existing) {
+    return new Response(JSON.stringify({ message: "User already exists" }), {
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  await env.USERS_KV.put(userKey, JSON.stringify({ name, email, phone, gender }));
+
+  return new Response(JSON.stringify({ message: "Account created successfully" }), {
+    headers: { "Content-Type": "application/json" },
+  });
 }
