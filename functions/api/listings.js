@@ -10,7 +10,7 @@ export async function onRequestGet({ request, env }) {
     bindings.push(email);
   }
 
-  const { results } = await env.IOT_DB.prepare(query).bind(...bindings).all();
+  const { results } = await env.DB.prepare(query).bind(...bindings).all();
 
   return new Response(JSON.stringify(results), {
     headers: { "Content-Type": "application/json" },
