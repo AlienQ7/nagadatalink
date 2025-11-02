@@ -67,32 +67,45 @@
         <button id="btnSubmit" onclick="addProduct()">Post Now</button>
     </div>
     <script>
-        document.getElementById("ptofileName").value = localStorage.getItem("name").toUpperCase()
-        document.getElementById("ptofilePhone").value = localStorage.getItem("phone").toUpperCase()
-        var btnsub = document.getElementById("btnSubmit");
+  // Prefill from localStorage (no change)
+  document.getElementById("ptofileName").value = (localStorage.getItem("name") || "").toUpperCase();
+  document.getElementById("ptofilePhone").value = (localStorage.getItem("phone") || "").toUpperCase();
 
-        function addProduct() {
-            var products = []
+  // Handle submit
+  async function addProduct() {
+    const data = {
+      title: document.getElementById("name").value,
+      description: document.getElementById("description").value,
+      category: document.getElementById("brand").value,
+      location: document.getElementById("location").value,
+      contact: document.getElementById("ptofilePhone").value + 
+               (document.getElementById("phoneYes").value.toLowerCase() === "yes" ? " (public)" : " (hidden)")
+    };
 
-            let obg = {
-                name: document.getElementById("name").value,
-                description: document.getElementById("description").value,
-                brands: document.getElementById("brand").value,
-                image: document.getElementById("image").value,
-                price: document.getElementById("price").value,
-                location: document.getElementById("location").value,
-                profileName: document.getElementById("ptofileName").value,
-                ptofilePhone: document.getElementById("ptofilePhone").value,
-                phoneShow: document.getElementById("phoneYes").value
-            }
-            products = JSON.parse(localStorage.getItem("products")) ? JSON.parse(localStorage.getItem(
-                "products")) : []
-            products.push(obg)
-            localStorage.setItem("products", JSON.stringify(products));
+    if (!data.title || !data.contact) {
+      alert("Please fill at least Title and Phone fields!");
+      return;
+    }
 
-            window.location.href = "./index.html"
-        }
-    </script>
+    try {
+      const res = await fetch("/api/ads", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+      if (result.success) {
+        alert("✅ Ad posted successfully!");
+        window.location.href = "./index.html";
+      } else {
+        alert("❌ Failed to post ad!");
+      }
+    } catch (err) {
+      alert("⚠️ Error: " + err);
+    }
+  }
+</script>
 </body>
 
 </html>
