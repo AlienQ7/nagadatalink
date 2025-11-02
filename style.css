@@ -256,3 +256,194 @@ button:hover {
     width: 100%;
   }
 }
+
+/* ============================================================
+   🧭 DASHBOARD PAGE STYLING (Amber Glow Edition)
+   ============================================================ */
+
+.header-bar {
+  background: var(--color-primary);
+  color: var(--color-light);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-md) var(--space-lg);
+  box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+.rank-display {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-xs);
+}
+
+.rank-label {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-accent);
+}
+
+.rank-title {
+  font-size: var(--font-size-lg);
+  font-weight: 600;
+  color: var(--color-light);
+}
+
+.header-menu {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.hamburger-btn {
+  background: var(--color-accent);
+  color: var(--color-light);
+  border: none;
+  border-radius: 8px;
+  padding: var(--space-sm) var(--space-md);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background var(--transition-medium), transform var(--transition-fast);
+  box-shadow: 0 0 10px var(--color-shadow);
+}
+.hamburger-btn:hover {
+  background: var(--color-accent-glow);
+  transform: translateY(-2px);
+}
+
+/* ------------------------------------------------------------
+   🧍 PROFILE CONTAINER
+   ------------------------------------------------------------ */
+.profile-container {
+  background: var(--color-light);
+  border: 1px solid var(--color-gray);
+  border-radius: 16px;
+  max-width: 600px;
+  margin: var(--space-xl) auto var(--space-lg);
+  padding: var(--space-lg);
+  text-align: center;
+  box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+
+.profile-container h2 {
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.profile-container p {
+  color: var(--color-text);
+  font-size: var(--font-size-base);
+}
+
+.profile-container a {
+  display: inline-block;
+  margin-top: var(--space-md);
+  color: var(--color-accent);
+  font-weight: 600;
+}
+.profile-container a:hover {
+  color: var(--color-accent-glow);
+}
+
+/* ------------------------------------------------------------
+   📦 MY ADS SECTION
+   ------------------------------------------------------------ */
+.task-manager {
+  max-width: var(--max-width-content);
+  margin: auto;
+  padding: var(--space-lg);
+  background: var(--color-light);
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+
+.task-manager h2 {
+  color: var(--color-primary);
+  text-align: center;
+  margin-bottom: var(--space-md);
+}
+
+.ads-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  justify-content: center;
+}
+
+.ads-container .profile-container {
+  width: 300px;
+  margin: var(--space-sm);
+}
+
+/* ------------------------------------------------------------
+   ➕ ADD NEW AD FORM
+   ------------------------------------------------------------ */
+.auth-container {
+  max-width: 600px;
+  margin: var(--space-xl) auto;
+  padding: var(--space-lg);
+  background: var(--color-light);
+  border: 1px solid var(--color-gray);
+  border-radius: 16px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.05);
+}
+
+.auth-container h2 {
+  text-align: center;
+  color: var(--color-primary);
+  margin-bottom: var(--space-md);
+}
+
+.auth-container form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.auth-container input,
+.auth-container textarea {
+  padding: var(--space-sm);
+  border: 2px solid var(--color-gray);
+  border-radius: 8px;
+  font-size: var(--font-size-base);
+  transition: border var(--transition-fast);
+}
+.auth-container input:focus,
+.auth-container textarea:focus {
+  border-color: var(--color-accent);
+  outline: none;
+}
+
+/* ------------------------------------------------------------
+   ⚓ FOOTER
+   ------------------------------------------------------------ */
+.footer {
+  background: var(--color-primary);
+  color: var(--color-light);
+  text-align: center;
+  padding: var(--space-md);
+  margin-top: var(--space-xl);
+  font-size: var(--font-size-sm);
+  box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+}
+
+/* ------------------------------------------------------------
+   📱 RESPONSIVENESS
+   ------------------------------------------------------------ */
+@media (max-width: 768px) {
+  .header-bar {
+    flex-direction: column;
+    text-align: center;
+  }
+
+  .profile-container,
+  .auth-container {
+    width: 90%;
+    margin: var(--space-lg) auto;
+  }
+
+  .ads-container {
+    flex-direction: column;
+    align-items: center;
+  }
+}
