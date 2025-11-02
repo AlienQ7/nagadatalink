@@ -10,7 +10,7 @@ export async function onRequestPost({ request, env }) {
   }
 
   try {
-    await env.IOT_DB.prepare(
+    await env.DB.prepare(
       "INSERT INTO listings (title, price, description, user_email, created_at) VALUES (?, ?, ?, ?, ?)"
     ).bind(title, price, description, userEmail, new Date().toISOString()).run();
 
