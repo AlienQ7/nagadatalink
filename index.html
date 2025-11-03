@@ -17,6 +17,18 @@
       position: relative;
       z-index: 1000;
     }
+    /**/
+    .menu-wrapper {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: #111;
+      color: #fff;
+      position: relative;
+      z-index: 1000;
+    } 
+    /**/
     .rank-display { font-size: 1.3em; font-weight: bold; }
     .rank-label { color: #fbbf24; }
     .rank-title { color: #fff; }
@@ -202,8 +214,8 @@
   <!-- HEADER -->
   <header class="header-bar">
     <div class="rank-display"><span class="rank-label">Naga</span><span class="rank-title">Space</span></div>
-    <div class="menu-wrapper">
-     <!-- <button id="hamburger" class="hamburger-icon">&#9776;</button>
+    <!--<div class="menu-wrapper">
+     <button id="hamburger" class="hamburger-icon">&#9776;</button>
       <div id="dropdownMenu" class="dropdown-menu">
         <button id="menuLogin">Login</button>
         <a id="menuProfile" href="profile.html" style="display:none;">Profile</a>
