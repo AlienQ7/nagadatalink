@@ -116,7 +116,7 @@ document.addEventListener("DOMContentLoaded", () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            action: "recover",
+            action: "forgot",
             email,
             recovery_code: recoveryCode,
             new_password: newPassword,
