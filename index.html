@@ -1,41 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>NagaDataLink</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .login-container {
+      background: #111;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #333;
+      width: 300px;
+    }
+    input, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin: 0.4rem 0;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #0056b3; }
+  </style>
 </head>
 <body>
-  <!-- main header / nav (keep your existing markup) -->
-  <div class="same__color"> 
-    <!-- ... keep your nav markup ... -->
-    <!-- simplified part for login link -->
-    <div class="login__sell" id="login__sell">
-      <button class="login__btn" onclick="document.getElementById('loginModal').classList.remove('hidden')">Login</button>
-      <a href="signup.html"><button class="sell__btn">Create Account</button></a>
-    </div>
+  <div class="login-container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p>Don’t have an account? <a href="signup.html" style="color:#4af;">Sign up</a></p>
   </div>
 
-  <!-- LOGIN MODAL -->
-  <div id="loginModal" class="login hidden">
-    <div class="login_form" style="max-width:420px;">
-      <span class="close__btn" onclick="document.getElementById('loginModal').classList.add('hidden')">&times;</span>
-      <img src="./images/logo.svg" alt="">
-      <h1>WELCOME</h1>
-      <h2>Log in to your account</h2>
+  <script>
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
 
-      <form id="loginForm">
-        <input id="loginEmail" type="email" placeholder="Email" required />
-        <input id="loginPassword" type="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-      </form>
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
 
-      <p><a href="forgot-password.html"><b>Forgot password / Reset</b></a></p>
-    </div>
-  </div>
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "login",
+          email,
+          password
+        }),
+      });
 
-  <!-- keep rest of your homepage sections & footer (cards, ads, etc.) -->
-  <script src="script.js"></script>
+      const data = await res.json();
+      console.log("Login response:", data);
+
+      if (res.ok) {
+        alert("✅ Welcome back, " + data.user.name + "!");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("❌ " + (data.error || "Login failed"));
+      }
+    });
+  </script>
 </body>
 </html>
