@@ -1,30 +1,94 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Sign Up | NagaDataLink</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sign Up</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #0a0a0a;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .signup-container {
+      background: #111;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 0 20px #333;
+      width: 300px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 0.6rem;
+      margin: 0.4rem 0;
+      border-radius: 6px;
+      border: none;
+    }
+    button {
+      background: #28a745;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #218838; }
+  </style>
 </head>
 <body>
-  <div class="signUp">
-    <div class="signUp_account">
-      <span class="close__btn" onclick="window.location.href='index.html'">&times;</span>
-      <h1>Create Account</h1>
-      <p>Join our community and start exploring today.</p>
-
-      <form id="signupForm">
-        <input id="signupName" type="text" placeholder="Username (min 5 chars)" required />
-        <input id="signupEmail" type="email" placeholder="Email" required />
-        <input id="signupPassword" type="password" placeholder="Password (min 8 chars)" required />
-        <input id="signupConfirmPassword" type="password" placeholder="Confirm Password" required />
-        <button type="submit">Sign Up</button>
-      </form>
-
-      <p>Already have an account? <a href="index.html"><b>Login here</b></a></p>
-    </div>
+  <div class="signup-container">
+    <h2>Create Account</h2>
+    <form id="signupForm">
+      <input type="text" id="name" placeholder="Full Name" required />
+      <input type="email" id="email" placeholder="Email" required />
+      <input type="password" id="password" placeholder="Password" required />
+      <input type="tel" id="phone" placeholder="Phone (optional)" />
+      <select id="gender">
+        <option value="">Select Gender (optional)</option>
+        <option value="male">Male</option>
+        <option value="female">Female</option>
+        <option value="other">Other</option>
+      </select>
+      <button type="submit">Sign Up</button>
+    </form>
+    <p>Already have an account? <a href="index.html" style="color:#4af;">Login</a></p>
   </div>
 
-  <script src="script.js"></script>
+  <script>
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const name = document.getElementById("name").value.trim();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value.trim();
+      const phone = document.getElementById("phone").value.trim();
+      const gender = document.getElementById("gender").value;
+
+      const res = await fetch("/api/auth", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          action: "signup",
+          name,
+          email,
+          password,
+          phone,
+          gender
+        }),
+      });
+
+      const data = await res.json();
+      console.log("Signup response:", data);
+
+      if (res.ok) {
+        alert("✅ Signup successful! Your recovery code: " + data.recovery_code);
+        window.location.href = "index.html";
+      } else {
+        alert("❌ " + (data.error || "Signup failed"));
+      }
+    });
+  </script>
 </body>
 </html>
