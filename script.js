@@ -1,12 +1,14 @@
 // -------------------------------
-// Signup Function
+// Signup / Login / Forgot Functions
 // -------------------------------
 document.addEventListener("DOMContentLoaded", () => {
   const signupForm = document.getElementById("signupForm");
   const loginForm = document.getElementById("loginForm");
   const forgotForm = document.getElementById("forgotForm");
 
+  // -------------------------------
   // SIGNUP
+  // -------------------------------
   if (signupForm) {
     signupForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -22,10 +24,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        const response = await fetch("/api/auth?action=signup", {
+        const response = await fetch("/api/auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password, gender }),
+          body: JSON.stringify({ action: "signup", name, email, password, gender }),
         });
 
         const result = await response.json();
@@ -54,7 +56,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // -------------------------------
   // LOGIN
+  // -------------------------------
   if (loginForm) {
     loginForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -68,10 +72,10 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        const response = await fetch("/api/auth?action=login", {
+        const response = await fetch("/api/auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ action: "login", email, password }),
         });
 
         const result = await response.json();
@@ -91,7 +95,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  // -------------------------------
   // FORGOT PASSWORD / RECOVER
+  // -------------------------------
   if (forgotForm) {
     forgotForm.addEventListener("submit", async (e) => {
       e.preventDefault();
@@ -106,10 +112,15 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       try {
-        const response = await fetch("/api/auth?action=recover", {
+        const response = await fetch("/api/auth", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, recovery_code: recoveryCode, new_password: newPassword }),
+          body: JSON.stringify({
+            action: "recover",
+            email,
+            recovery_code: recoveryCode,
+            new_password: newPassword,
+          }),
         });
 
         const result = await response.json();
