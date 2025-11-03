@@ -22,21 +22,19 @@
     .rank-label { color: #fbbf24; }
     .rank-title { color: #fff; }
 
-    /* --- Menu Button & Dropdown --- */
-    .menu-wrapper {
-      position: relative;
-    }
-    .menu-button {
+    .hamburger-icon {
       background: none;
       border: none;
-      color: #fbbf24;
+      color: #fff;
       font-size: 24px;
       cursor: pointer;
     }
-    .menu-dropdown {
+    .menu-wrapper { position: relative; margin-left: auto; }
+
+    .dropdown-menu {
       position: absolute;
       right: 0;
-      top: 45px;
+      top: 55px;
       background: #fff;
       color: #111;
       border-radius: 10px;
@@ -47,8 +45,7 @@
       overflow: hidden;
       z-index: 999;
     }
-    .menu-dropdown button,
-    .menu-dropdown a {
+    .dropdown-menu button, .dropdown-menu a {
       background: none;
       border: none;
       text-align: left;
@@ -58,8 +55,7 @@
       width: 100%;
       color: #111;
     }
-    .menu-dropdown button:hover,
-    .menu-dropdown a:hover {
+    .dropdown-menu button:hover, .dropdown-menu a:hover {
       background: #f4f4f4;
     }
 
@@ -82,8 +78,7 @@
       width: 92%;
       position: relative;
     }
-    .modal-card input,
-    .modal-card button {
+    .modal-card input, .modal-card button {
       width: 100%;
       margin: 8px 0;
       padding: 10px;
@@ -96,13 +91,12 @@
       font-weight: bold;
       cursor: pointer;
     }
-
     .footer {
-      text-align: center;
-      padding: 15px 0;
-      background: #111;
-      color: #fff;
-      margin-top: 20px;
+      text-align:center;
+      padding:15px 0;
+      background:#111;
+      color:#fff;
+      margin-top:20px;
     }
   </style>
 </head>
@@ -115,12 +109,11 @@
     </div>
 
     <div class="menu-wrapper">
-      <button class="menu-button" id="menuButton">&#9776;</button>
-      <div class="menu-dropdown" id="menuDropdown">
+      <button id="hamburger" class="hamburger-icon">&#9776;</button>
+      <div id="dropdownMenu" class="dropdown-menu">
         <button id="menuLogin">Login</button>
         <a id="menuProfile" href="profile.html" style="display:none;">Profile</a>
         <button id="menuLogout" style="display:none;">Logout</button>
-        <a id="menuAbout" href="#" style="border-top:1px solid #eee;">About</a>
       </div>
     </div>
   </header>
@@ -160,36 +153,25 @@
   </div>
 
   <script>
-    async function tryLoadPublicAds() {
-      if (typeof loadAds === "function") {
-        try { await loadAds("publicAds"); }
-        catch (e) { console.warn("loadAds(publicAds) failed:", e); }
-      } else {
-        document.getElementById("publicAds").innerHTML = '<p>No listings loader available.</p>';
-      }
-    }
-
     document.addEventListener("DOMContentLoaded", () => {
-      const menuButton = document.getElementById("menuButton");
-      const menuDropdown = document.getElementById("menuDropdown");
+      const hamburger = document.getElementById("hamburger");
+      const dropdownMenu = document.getElementById("dropdownMenu");
       const menuLogin = document.getElementById("menuLogin");
       const menuLogout = document.getElementById("menuLogout");
       const menuProfile = document.getElementById("menuProfile");
       const loginModal = document.getElementById("loginModal");
       const closeLoginModal = document.getElementById("closeLoginModal");
 
-      tryLoadPublicAds();
-
-      // Toggle menu dropdown
-      menuButton.addEventListener("click", () => {
-        menuDropdown.style.display = menuDropdown.style.display === "flex" ? "none" : "flex";
+      // Toggle dropdown
+      hamburger.addEventListener("click", () => {
+        dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
       });
       document.addEventListener("click", (e) => {
-        if (!e.target.closest(".menu-wrapper")) menuDropdown.style.display = "none";
+        if (!e.target.closest(".menu-wrapper")) dropdownMenu.style.display = "none";
       });
 
-      // Update UI based on login state
-      function updateMenuForUser() {
+      // User state
+      function updateHeader() {
         const user = JSON.parse(localStorage.getItem("user"));
         if (user) {
           menuLogin.style.display = "none";
@@ -201,24 +183,29 @@
           menuLogout.style.display = "none";
         }
       }
-      updateMenuForUser();
+      updateHeader();
 
-      // Login modal control
-      function openLoginModal() { loginModal.style.display = "flex"; menuDropdown.style.display = "none"; }
-      function closeLoginModalFn() { loginModal.style.display = "none"; }
+      // Modal open/close
+      function openLoginModal() {
+        loginModal.style.display = "flex";
+        dropdownMenu.style.display = "none";
+      }
+      function closeLoginModalFn() {
+        loginModal.style.display = "none";
+      }
+      menuLogin.addEventListener("click", openLoginModal);
       closeLoginModal.addEventListener("click", closeLoginModalFn);
-      loginModal.addEventListener("click", (e) => { if (e.target === loginModal) closeLoginModalFn(); });
-
-      // Menu actions
-      menuLogin.addEventListener("click", (e) => { e.preventDefault(); openLoginModal(); });
-      menuProfile.addEventListener("click", () => { window.location.href = "profile.html"; });
-      menuLogout.addEventListener("click", () => {
-        localStorage.removeItem("user");
-        updateMenuForUser();
-        menuDropdown.style.display = "none";
+      loginModal.addEventListener("click", (e) => {
+        if (e.target === loginModal) closeLoginModalFn();
       });
 
-      // Login form submit
+      // Logout
+      menuLogout.addEventListener("click", () => {
+        localStorage.removeItem("user");
+        updateHeader();
+      });
+
+      // Login handler
       const loginForm = document.getElementById("loginForm");
       loginForm.addEventListener("submit", async (e) => {
         e.preventDefault();
@@ -238,11 +225,32 @@
           localStorage.setItem("user", JSON.stringify(data.user));
           closeLoginModalFn();
           window.location.href = "profile.html";
-        } catch (err) {
-          console.error(err);
+        } catch {
           alert("Network error during login.");
         }
       });
+
+      // Public ads
+      async function loadPublicAds() {
+        try {
+          const res = await fetch("/api/ads?public=true");
+          const ads = await res.json();
+          const container = document.getElementById("publicAds");
+          if (!Array.isArray(ads) || ads.length === 0) {
+            container.innerHTML = "<p>No listings available.</p>";
+            return;
+          }
+          container.innerHTML = ads.map(a => `
+            <div class="ad-card">
+              <h3>${a.title}</h3>
+              <p>${a.description}</p>
+            </div>
+          `).join("");
+        } catch {
+          document.getElementById("publicAds").innerHTML = "<p>Failed to load listings.</p>";
+        }
+      }
+      loadPublicAds();
     });
   </script>
 </body>
