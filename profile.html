@@ -96,6 +96,25 @@
       margin: 8px 0;
     }
 
+    /* 🟩 New Sell Button */
+    .sell-section {
+      text-align: center;
+      margin: 25px auto;
+    }
+    .sell-section a {
+      background: #ffc107;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    .sell-section a:hover {
+      background: #e0a800;
+    }
+
     .footer {
       text-align: center;
       padding: 15px 0;
@@ -139,6 +158,11 @@
       <h2>My Ads</h2>
       <div id="userAds"><p>Loading your ads...</p></div>
     </section>
+
+    <!-- 🟩 New Sell Now Section -->
+    <div class="sell-section" id="sellSection" style="display:none;">
+      <a href="sell.html">➕ Sell Now</a>
+    </div>
   </main>
 
   <footer class="footer">
@@ -150,6 +174,7 @@
       const dropdownMenu = document.getElementById("dropdownMenu");
       const hamburger = document.getElementById("hamburger");
       const menuLogout = document.getElementById("menuLogout");
+      const sellSection = document.getElementById("sellSection");
 
       hamburger.addEventListener("click", () => {
         dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
@@ -166,6 +191,9 @@
 
       document.getElementById("profileName").textContent = user.name || "User";
       document.getElementById("profileEmail").textContent = user.email || "Unknown";
+
+      // ✅ Show Sell button for logged-in users
+      sellSection.style.display = "block";
 
       menuLogout.addEventListener("click", () => {
         localStorage.removeItem("user");
