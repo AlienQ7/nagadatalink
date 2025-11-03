@@ -6,78 +6,102 @@
   <title>Profile - NagaDataLink</title>
   <link rel="stylesheet" href="style.css" />
   <style>
-    .menu-wrapper {
-      position: relative;
-      display: inline-block;
-    }
-
-    .menu-btn {
-      background: var(--color-accent, #f5b400);
-      border: none;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 20px;
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: #111;
       color: #fff;
-      box-shadow: 0 0 8px rgba(0,0,0,0.3);
     }
-
-    .menu-content {
-      display: none;
-      position: absolute;
-      right: 0;
-      background: #fff;
-      color: #000;
-      min-width: 160px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      z-index: 999;
+    .rank-display {
+      font-size: 1.3em;
+      font-weight: bold;
     }
+    .rank-label { color: #fbbf24; }
+    .rank-title { color: #fff; }
 
-    .menu-content a, .menu-content button {
-      display: block;
-      width: 100%;
-      text-align: left;
-      padding: 10px 14px;
+    .hamburger-icon {
       background: none;
       border: none;
-      color: #000;
-      text-decoration: none;
-      font-size: 15px;
+      color: #fff;
+      font-size: 24px;
       cursor: pointer;
     }
+    .menu-wrapper { position: relative; margin-left: auto; }
 
-    .menu-content a:hover,
-    .menu-content button:hover {
-      background: #f5f5f5;
-    }
-
-    .menu-wrapper.show .menu-content {
-      display: block;
-    }
-
-    .profile-container {
-      max-width: 600px;
-      margin: 60px auto;
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: 55px;
       background: #fff;
-      padding: 25px;
+      color: #111;
       border-radius: 10px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      color: #000;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      min-width: 160px;
+      overflow: hidden;
+      z-index: 999;
+    }
+    .dropdown-menu button, .dropdown-menu a {
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+      color: #111;
+    }
+    .dropdown-menu button:hover, .dropdown-menu a:hover {
+      background: #f4f4f4;
     }
 
-    .profile-container h2 {
+    .profile-card {
+      background: #fff;
+      color: #111;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: 40px auto 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .profile-actions { text-align: center; margin-top: 15px; }
+    .profile-actions a {
+      display: inline-block;
+      background: #fbbf24;
+      color: #111;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    #myAds {
+      max-width: 600px;
+      margin: 25px auto;
+      padding: 10px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    #myAds h2 { margin-bottom: 10px; }
+
+    .ad-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 8px 0;
+    }
+
+    .footer {
       text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .profile-info {
+      padding: 15px 0;
+      background: #111;
+      color: #fff;
       margin-top: 20px;
-      line-height: 1.7;
-    }
-
-    .profile-info strong {
-      color: var(--color-accent, #f5b400);
     }
   </style>
 </head>
@@ -89,150 +113,90 @@
       <span class="rank-title">DataLink</span>
     </div>
 
-    <div class="menu-wrapper" id="menuWrapper">
-      <button class="menu-btn">☰</button>
-      <div class="menu-content" id="menuContent">
-        <button id="loginBtn">Login</button>
-        <a id="profileLink" href="profile.html" style="display:none;">Profile</a>
-        <button id="logoutBtn" style="display:none;">Logout</button>
-        <a href="#" id="aboutBtn">About</a>
+    <div class="menu-wrapper">
+      <button id="hamburger" class="hamburger-icon">&#9776;</button>
+      <div id="dropdownMenu" class="dropdown-menu">
+        <a href="index.html">Home</a>
+        <button id="menuLogout">Logout</button>
       </div>
     </div>
   </header>
 
-  <!-- PROFILE SECTION -->
-  <div class="profile-container">
-    <h2>Your Profile</h2>
-    <div id="profileInfo" class="profile-info">
-      <p>Loading your information...</p>
+  <!-- PROFILE INFO -->
+  <main>
+    <div class="profile-card">
+      <h2>Your Profile</h2>
+      <p><strong>Name:</strong> <span id="profileName">-</span></p>
+      <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
+      <p><strong>Joined:</strong> <span id="profileJoined">N/A</span></p>
     </div>
-  </div>
+
+    <div class="profile-actions">
+      <a href="index.html">← Back to Home</a>
+    </div>
+
+    <section id="myAds">
+      <h2>My Ads</h2>
+      <div id="userAds"><p>Loading your ads...</p></div>
+    </section>
+  </main>
 
   <footer class="footer">
     <p>&copy; 2025 NagaDataLink</p>
   </footer>
 
-  <!-- LOGIN MODAL -->
-  <div id="loginModal" class="modal" style="display:none; position:fixed; inset:0; align-items:center; justify-content:center; z-index:9999; background:rgba(0,0,0,0.6);">
-    <div class="modal-card" style="background:#fff;color:#111;padding:20px;border-radius:10px;max-width:420px;width:92%;">
-      <button id="closeLoginModal" style="float:right;background:transparent;border:none;font-size:20px;cursor:pointer;">&times;</button>
-      <h2 style="margin-top:0;">Login</h2>
-
-      <form id="loginForm">
-        <input type="email" id="email" placeholder="Email" required />
-        <input type="password" id="password" placeholder="Password" required />
-        <button type="submit">Login</button>
-      </form>
-
-      <p style="text-align:center;margin-top:8px;">
-        <a href="forgot-password.html" style="color:#4af;">Forgot password?</a>
-      </p>
-      <p style="text-align:center;margin-top:6px;">Don’t have an account? <a href="signup.html" style="color:#4af;">Sign up</a></p>
-    </div>
-  </div>
-
   <script>
-    document.addEventListener("DOMContentLoaded", () => {
-      const menuWrapper = document.getElementById("menuWrapper");
-      const loginBtn = document.getElementById("loginBtn");
-      const logoutBtn = document.getElementById("logoutBtn");
-      const profileLink = document.getElementById("profileLink");
-      const loginModal = document.getElementById("loginModal");
-      const closeLoginModal = document.getElementById("closeLoginModal");
+    document.addEventListener("DOMContentLoaded", async () => {
+      const dropdownMenu = document.getElementById("dropdownMenu");
+      const hamburger = document.getElementById("hamburger");
+      const menuLogout = document.getElementById("menuLogout");
 
-      // Menu toggle
-      menuWrapper.querySelector(".menu-btn").addEventListener("click", () => {
-        menuWrapper.classList.toggle("show");
+      hamburger.addEventListener("click", () => {
+        dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
+      });
+      document.addEventListener("click", (e) => {
+        if (!e.target.closest(".menu-wrapper")) dropdownMenu.style.display = "none";
       });
 
-      window.addEventListener("click", (e) => {
-        if (!menuWrapper.contains(e.target)) menuWrapper.classList.remove("show");
-      });
-
-      // Modal open/close
-      function openLoginModal() { loginModal.style.display = "flex"; }
-      function closeLoginModalFn() { loginModal.style.display = "none"; }
-
-      loginBtn.addEventListener("click", () => {
-        openLoginModal();
-        menuWrapper.classList.remove("show");
-      });
-      closeLoginModal.addEventListener("click", closeLoginModalFn);
-      loginModal.addEventListener("click", (ev) => {
-        if (ev.target === loginModal) closeLoginModalFn();
-      });
-
-      // Menu state
-      function updateMenu() {
-        const user = JSON.parse(localStorage.getItem("user"));
-        if (user) {
-          loginBtn.style.display = "none";
-          logoutBtn.style.display = "block";
-          profileLink.style.display = "block";
-        } else {
-          loginBtn.style.display = "block";
-          logoutBtn.style.display = "none";
-          profileLink.style.display = "none";
-        }
-      }
-      updateMenu();
-
-      // Logout
-      logoutBtn.addEventListener("click", () => {
-        localStorage.removeItem("user");
-        updateMenu();
-        menuWrapper.classList.remove("show");
-        window.location.href = "index.html";
-      });
-
-      // Load profile info
       const user = JSON.parse(localStorage.getItem("user"));
       if (!user) {
         window.location.href = "index.html";
         return;
       }
 
-      const info = document.getElementById("profileInfo");
-      info.innerHTML = `
-        <p><strong>Name:</strong> ${user.name || "Unknown"}</p>
-        <p><strong>Email:</strong> ${user.email}</p>
-        <p><strong>Joined:</strong> ${user.createdAt || "N/A"}</p>
-      `;
+      document.getElementById("profileName").textContent = user.name || "User";
+      document.getElementById("profileEmail").textContent = user.email || "Unknown";
 
-      // Login form
-      const loginForm = document.getElementById("loginForm");
-      loginForm.addEventListener("submit", async (e) => {
-        e.preventDefault();
-        const email = document.getElementById("email").value.trim();
-        const password = document.getElementById("password").value.trim();
+      menuLogout.addEventListener("click", () => {
+        localStorage.removeItem("user");
+        window.location.href = "index.html";
+      });
 
+      // Load user's ads
+      async function loadUserAds() {
         try {
-          const res = await fetch("/api/auth", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ action: "login", email, password }),
-          });
-          const data = await res.json();
+          const res = await fetch(`/api/ads?user=${encodeURIComponent(user.email)}`);
+          const ads = await res.json();
+          const container = document.getElementById("userAds");
 
-          if (!res.ok) {
-            alert(data.error || "Login failed");
+          if (!Array.isArray(ads) || ads.length === 0) {
+            container.innerHTML = "<p>No ads yet.</p>";
             return;
           }
 
-          localStorage.setItem("user", JSON.stringify(data.user));
-          closeLoginModalFn();
-          window.location.reload();
-        } catch (err) {
-          alert("Network error during login.");
-          console.error(err);
+          container.innerHTML = ads.map(a => `
+            <div class="ad-card">
+              <h3>${a.title}</h3>
+              <p>${a.description}</p>
+              <small>${a.date || ''}</small>
+            </div>
+          `).join("");
+        } catch {
+          document.getElementById("userAds").innerHTML = "<p>Failed to load ads.</p>";
         }
-      });
+      }
 
-      // Dummy About
-      document.getElementById("aboutBtn").addEventListener("click", (e) => {
-        e.preventDefault();
-        alert("About section coming soon!");
-      });
+      loadUserAds();
     });
   </script>
 </body>
