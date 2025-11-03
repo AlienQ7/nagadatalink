@@ -1,5 +1,4 @@
 // functions/api/auth.js
-
 export async function onRequest(context) {
   const { request, env } = context;
   const DB = env.DB; // D1 binding
@@ -11,10 +10,12 @@ export async function onRequest(context) {
     "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
   };
 
+  // Handle preflight
   if (request.method === "OPTIONS") {
-    return new Response(JSON.stringify({ ok: true }), { status: 204, headers: CORS_HEADERS });
+    return new Response(null, { status: 204, headers: CORS_HEADERS });
   }
 
+  // --- Helpers ---
   async function hashPassword(password) {
     const enc = new TextEncoder();
     const data = enc.encode(String(password));
@@ -23,28 +24,25 @@ export async function onRequest(context) {
     return bytes.map((b) => b.toString(16).padStart(2, "0")).join("");
   }
 
+  // Correct use of crypto.getRandomValues (don't alias it)
   function makeRecoveryCode(len = 12) {
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    const bytes = new Uint8Array(len);
+    crypto.getRandomValues(bytes); // <-- call on crypto directly
     let out = "";
-    const rand = crypto.getRandomValues;
-    while (out.length < len) {
-      const r = new Uint32Array(1);
-      rand(r);
-      let v = r[0];
-      while (v && out.length < len) {
-        out += chars[v % chars.length];
-        v = Math.floor(v / chars.length);
-      }
+    for (let i = 0; i < len; i++) {
+      out += chars[bytes[i] % chars.length];
     }
     return out;
   }
 
+  // Parse JSON body safely for POST/PUT
   let body = {};
   try {
     if (request.method === "POST" || request.method === "PUT") {
       body = await request.json().catch(() => ({}));
     }
-  } catch {
+  } catch (e) {
     body = {};
   }
 
@@ -54,17 +52,20 @@ export async function onRequest(context) {
   if (!action) {
     if (pathname.endsWith("/signup")) action = "signup";
     else if (pathname.endsWith("/login")) action = "login";
-    else if (pathname.endsWith("/forgot") || pathname.endsWith("/reset") || pathname.endsWith("/recover")) action = "forgot";
+    else if (pathname.endsWith("/forgot") || pathname.endsWith("/reset") || pathname.endsWith("/recover"))
+      action = "forgot";
   }
 
   if (!action) {
-    return new Response(JSON.stringify({ error: "Missing action. Use ?action=signup|login|forgot or { action } in body." }), {
+    return new Response(JSON.stringify({ error: "Missing action. Use ?action=signup|login|forgot or body.action." }), {
       status: 400,
       headers: CORS_HEADERS,
     });
   }
 
+  // ---------------------------
   // SIGNUP
+  // ---------------------------
   if (action === "signup") {
     const name = (body.name || "").toString().trim();
     const email = (body.email || "").toString().trim().toLowerCase();
@@ -80,63 +81,77 @@ export async function onRequest(context) {
     }
 
     try {
+      // check existing
       const existing = await DB.prepare("SELECT id FROM users WHERE email = ?").bind(email).first();
       if (existing) {
-        return new Response(JSON.stringify({ error: "User already exists" }), { status: 409, headers: CORS_HEADERS });
+        return new Response(JSON.stringify({ error: "User already exists" }), {
+          status: 409,
+          headers: CORS_HEADERS,
+        });
       }
 
       const hashed = await hashPassword(password);
       const recovery_code = makeRecoveryCode(12);
 
-      await DB.prepare("INSERT INTO users (name, email, password, phone, gender, recovery_code) VALUES (?, ?, ?, ?, ?, ?)")
-        .bind(name, email, hashed, phone, gender, recovery_code)
-        .run();
+      await DB.prepare(
+        "INSERT INTO users (name, email, password, phone, gender, recovery_code) VALUES (?, ?, ?, ?, ?, ?)"
+      ).bind(name, email, hashed, phone, gender, recovery_code).run();
 
+      // Return recovery code once — client must show/save it
       return new Response(JSON.stringify({ message: "Signup successful", recovery_code }), {
         status: 201,
         headers: CORS_HEADERS,
       });
     } catch (err) {
-      return new Response(
-        JSON.stringify({
-          error: "Signup failed",
-          details: err.message || String(err),
-          stack: err.stack || null,
-        }),
-        { status: 500, headers: CORS_HEADERS }
-      );
+      console.error("Signup error:", err && (err.stack || err));
+      return new Response(JSON.stringify({ error: "Internal server error (signup)" }), {
+        status: 500,
+        headers: CORS_HEADERS,
+      });
     }
-  }
+  } // end signup
 
+  // ---------------------------
   // LOGIN
+  // ---------------------------
   if (action === "login") {
     const email = (body.email || "").toString().trim().toLowerCase();
     const password = body.password || "";
 
     if (!email || !password) {
-      return new Response(JSON.stringify({ error: "Missing email or password" }), { status: 400, headers: CORS_HEADERS });
+      return new Response(JSON.stringify({ error: "Missing email or password" }), {
+        status: 400,
+        headers: CORS_HEADERS,
+      });
     }
 
     try {
       const user = await DB.prepare("SELECT * FROM users WHERE email = ?").bind(email).first();
       if (!user) {
-        return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401, headers: CORS_HEADERS });
+        return new Response(JSON.stringify({ error: "Invalid credentials" }), {
+          status: 401,
+          headers: CORS_HEADERS,
+        });
       }
 
       const hashed = await hashPassword(password);
       const stored = user.password || "";
       const isHashedMatch = hashed === stored;
-      const isPlainMatch = password === stored;
+      const isPlainMatch = password === stored; // legacy support
 
       if (!isHashedMatch && !isPlainMatch) {
-        return new Response(JSON.stringify({ error: "Invalid credentials" }), { status: 401, headers: CORS_HEADERS });
+        return new Response(JSON.stringify({ error: "Invalid credentials" }), {
+          status: 401,
+          headers: CORS_HEADERS,
+        });
       }
 
+      // Upgrade plaintext to hashed if necessary
       if (isPlainMatch && !isHashedMatch) {
         try {
           await DB.prepare("UPDATE users SET password = ? WHERE id = ?").bind(hashed, user.id).run();
         } catch (e) {
-          console.error("Password upgrade failed:", e);
+          console.error("Password upgrade failed:", e && (e.stack || e));
         }
       }
 
@@ -153,45 +168,50 @@ export async function onRequest(context) {
         headers: CORS_HEADERS,
       });
     } catch (err) {
-      return new Response(
-        JSON.stringify({
-          error: "Login failed",
-          details: err.message || String(err),
-          stack: err.stack || null,
-        }),
-        { status: 500, headers: CORS_HEADERS }
-      );
+      console.error("Login error:", err && (err.stack || err));
+      return new Response(JSON.stringify({ error: "Internal server error (login)" }), {
+        status: 500,
+        headers: CORS_HEADERS,
+      });
     }
-  }
+  } // end login
 
-  // FORGOT
+  // ---------------------------
+  // FORGOT / RECOVER
+  // ---------------------------
   if (action === "forgot") {
     const email = (body.email || "").toString().trim().toLowerCase();
     if (!email) {
-      return new Response(JSON.stringify({ error: "Missing email" }), { status: 400, headers: CORS_HEADERS });
+      return new Response(JSON.stringify({ error: "Missing email" }), {
+        status: 400,
+        headers: CORS_HEADERS,
+      });
     }
 
     try {
       const user = await DB.prepare("SELECT id, recovery_code FROM users WHERE email = ?").bind(email).first();
 
       if (!user) {
+        // generic response (do not reveal existence)
         return new Response(JSON.stringify({ message: "If an account exists, instructions were sent." }), {
           status: 200,
           headers: CORS_HEADERS,
         });
       }
 
+      // If client submitted recovery_code + new_password -> perform reset
       if (body.recovery_code && body.new_password) {
         const provided = String(body.recovery_code);
         if (!user.recovery_code || provided !== user.recovery_code) {
-          return new Response(JSON.stringify({ error: "Invalid recovery code" }), { status: 401, headers: CORS_HEADERS });
+          return new Response(JSON.stringify({ error: "Invalid recovery code" }), {
+            status: 401,
+            headers: CORS_HEADERS,
+          });
         }
 
         const newHashed = await hashPassword(String(body.new_password));
         const newCode = makeRecoveryCode(12);
-        await DB.prepare("UPDATE users SET password = ?, recovery_code = ? WHERE id = ?")
-          .bind(newHashed, newCode, user.id)
-          .run();
+        await DB.prepare("UPDATE users SET password = ?, recovery_code = ? WHERE id = ?").bind(newHashed, newCode, user.id).run();
 
         return new Response(JSON.stringify({ message: "Password reset successful", recovery_code: newCode }), {
           status: 200,
@@ -199,21 +219,23 @@ export async function onRequest(context) {
         });
       }
 
+      // Otherwise: client just initiated reset (no email sending implemented here)
       return new Response(JSON.stringify({ message: "If an account exists, follow the reset instructions you received." }), {
         status: 200,
         headers: CORS_HEADERS,
       });
     } catch (err) {
-      return new Response(
-        JSON.stringify({
-          error: "Forgot failed",
-          details: err.message || String(err),
-          stack: err.stack || null,
-        }),
-        { status: 500, headers: CORS_HEADERS }
-      );
+      console.error("Forgot error:", err && (err.stack || err));
+      return new Response(JSON.stringify({ error: "Internal server error (forgot)" }), {
+        status: 500,
+        headers: CORS_HEADERS,
+      });
     }
-  }
+  } // end forgot
 
-  return new Response(JSON.stringify({ error: "Unknown action" }), { status: 400, headers: CORS_HEADERS });
+  // Unknown action
+  return new Response(JSON.stringify({ error: "Unknown action" }), {
+    status: 400,
+    headers: CORS_HEADERS,
+  });
 }
