@@ -18,12 +18,12 @@
 
       <div class="password-container">
         <input type="password" id="password" placeholder="Password" required />
-        <span class="toggle-password" onclick="togglePassword('password', this)">👁️</span>
+        <span class="toggle-password" onclick="togglePassword('password', this)">🔍︎</span>
       </div>
 
       <div class="password-container">
         <input type="password" id="confirmPassword" placeholder="Confirm Password" required />
-        <span class="toggle-password" onclick="togglePassword('confirmPassword', this)">👁️</span>
+        <span class="toggle-password" onclick="togglePassword('confirmPassword', this)">🔍︎</span>
       </div>
 
       <button type="submit">Sign Up</button>
@@ -39,7 +39,7 @@
         el.textContent = "🙈";
       } else {
         field.type = "password";
-        el.textContent = "👁️";
+        el.textContent = "🔍︎";
       }
     }
 
