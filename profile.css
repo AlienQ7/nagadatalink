@@ -1,42 +1,117 @@
-.profile_container{
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
 
-.container{
-    width: 90%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: auto;
-    flex-direction: column  ;
-    border: 1px solid #012f34;
-    border-radius: 5px;
-    padding: 30px;
-}
+    .header-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 12px 20px;
+      background: #111;
+      color: #fff;
+    }
+    .rank-display {
+      font-size: 1.3em;
+      font-weight: bold;
+    }
+    .rank-label { color: #fbbf24; }
+    .rank-title { color: #fff; }
 
-.container .input{
-    width: 100%;
-    height: auto;
-}
+    .hamburger-icon {
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 24px;
+      cursor: pointer;
+    }
+    .menu-wrapper { position: relative; margin-left: auto; }
 
-.container input{
-    width: 100%;
-    padding: 10px 30px;
-    border: 1px solid #012f34;
-    margin: 10px 0;
-    border-radius: 5px;
-}
-.container button{
-    text-align: left;
-    margin: 10px 0;
-    padding: 10px 30px;
-    background-color: #012f34;
-    color: #fff;
-    border: 1px solid #012f34;
-    border-radius: 5px;
-    cursor: pointer;
-}
+    .dropdown-menu {
+      position: absolute;
+      right: 0;
+      top: 55px;
+      background: #fff;
+      color: #111;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      display: none;
+      flex-direction: column;
+      min-width: 160px;
+      overflow: hidden;
+      z-index: 999;
+    }
+    .dropdown-menu button, .dropdown-menu a {
+      background: none;
+      border: none;
+      text-align: left;
+      padding: 12px 16px;
+      font-size: 15px;
+      cursor: pointer;
+      width: 100%;
+      color: #111;
+    }
+    .dropdown-menu button:hover, .dropdown-menu a:hover {
+      background: #f4f4f4;
+    }
+
+    .profile-card {
+      background: #fff;
+      color: #111;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 400px;
+      margin: 40px auto 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .profile-actions { text-align: center; margin-top: 15px; }
+    .profile-actions a {
+      display: inline-block;
+      background: #fbbf24;
+      color: #111;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    #myAds {
+      max-width: 600px;
+      margin: 25px auto;
+      padding: 10px;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    #myAds h2 { margin-bottom: 10px; }
+
+    .ad-card {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 10px;
+      margin: 8px 0;
+    }
+
+    /* 🟩 New Sell Button */
+    .sell-section {
+      text-align: center;
+      margin: 25px auto;
+    }
+    .sell-section a {
+      background: #ffc107;
+      color: #000;
+      padding: 10px 20px;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: background 0.2s;
+    }
+    .sell-section a:hover {
+      background: #e0a800;
+    }
+
+    .footer {
+      text-align: center;
+      padding: 15px 0;
+      background: #111;
+      color: #fff;
+      margin-top: 20px;
+    }
