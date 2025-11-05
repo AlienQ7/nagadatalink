@@ -73,8 +73,41 @@
       console.log("Signup response:", data);
 
       if (res.ok) {
-        alert("✅ Signup successful! Your recovery code: " + data.recovery_code);
-        window.location.href = "profile.html";
+         const code = data.recovery_code;
+
+         // Create a simple overlay message
+         const msg = document.createElement("div");
+         msg.innerHTML = `
+         <div style="
+      position: fixed; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(0,0,0,0.6); z-index: 9999;
+    ">
+      <div style="
+        background: #111; color: #fff; padding: 20px; border-radius: 10px;
+        text-align: center; max-width: 300px;
+      ">
+        <h3>✅ Signup successful!</h3>
+        <p>Your recovery code:</p>
+        <pre style="
+          background:#222; color:#0f0; padding:10px; border-radius:8px;
+          user-select:text; white-space: pre-wrap;
+        ">${code}</pre>
+        <small>Copy and keep this code safe.</small><br><br>
+        <button id="okBtn" style="
+          background:#0f0; color:#000; border:none; padding:8px 14px;
+          border-radius:6px; cursor:pointer;
+        ">OK</button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(msg);
+
+  document.getElementById("okBtn").addEventListener("click", () => {
+    document.body.removeChild(msg);
+    window.location.href = "profile.html";
+  });
+}
       } else {
         alert("❌ " + (data.error || "Signup failed"));
       }
