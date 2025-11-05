@@ -232,6 +232,39 @@ export async function onRequest(context) {
       });
     }
   } // end forgot
+  // ---------------------------
+  // DELETE ACCOUNT
+  // ---------------------------
+  if (action === "delete") {
+    const email = (body.email || "").toString().trim().toLowerCase();
+    if (!email) {
+      return new Response(JSON.stringify({ error: "Missing email" }), {
+        status: 400,
+        headers: CORS_HEADERS,
+      });
+    }
+
+    try {
+      const result = await DB.prepare("DELETE FROM users WHERE email = ?").bind(email).run();
+      if (result.meta.changes > 0) {
+        return new Response(JSON.stringify({ success: true, message: "Account deleted" }), {
+          status: 200,
+          headers: CORS_HEADERS,
+        });
+      } else {
+        return new Response(JSON.stringify({ success: false, error: "User not found" }), {
+          status: 404,
+          headers: CORS_HEADERS,
+        });
+      }
+    } catch (err) {
+      console.error("Delete account error:", err);
+      return new Response(JSON.stringify({ success: false, error: "Internal server error (delete)" }), {
+        status: 500,
+        headers: CORS_HEADERS,
+      });
+    }
+  }
 
   // Unknown action
   return new Response(JSON.stringify({ error: "Unknown action" }), {
