@@ -115,3 +115,11 @@
       color: #fff;
       margin-top: 20px;
     }
+    /* Delete account button styling */
+#menuDelete {
+  color: #b91c1c; /* red tone */
+  font-weight: bold;
+}
+#menuDelete:hover {
+  background: #fee2e2;
+}
