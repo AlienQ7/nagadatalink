@@ -1,20 +1,13 @@
-/* === Premium Sci-Fi Gold Theme for Signup === */
+/* === Premium Gold Glow Theme for Signup === */
 :root {
-  --dark-bg: #0a0e1c;
-  --neon-gold: #ffd700;
-  --text-color: #f5f5f5;
-  --input-bg: rgba(21, 26, 48, 0.7);
-  --border-glow: rgba(255, 215, 0, 0.6);
-  --robot-color: #14141f;
+  --dark-bg: #0a0a0a;
+  --gold: #ffd700;
+  --gold-glow: rgba(255, 215, 0, 0.8);
+  --input-bg: #121212;
+  --text-color: #e0e0e0;
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-  font-family: 'Orbitron', sans-serif;
-}
-
+/* overall body */
 body {
   background-color: var(--dark-bg);
   color: var(--text-color);
@@ -22,132 +15,96 @@ body {
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
-    url('https://picsum.photos/1920/1080?blur=3');
-  background-size: cover;
+  font-family: 'Orbitron', sans-serif;
 }
 
-/* --- Main Container --- */
-.login_email {
+/* container */
+.signup-container {
+  background: rgba(10, 10, 10, 0.85);
+  border: 1px solid var(--gold);
+  box-shadow: 0 0 25px var(--gold-glow), inset 0 0 5px rgba(255,255,255,0.1);
+  border-radius: 12px;
+  padding: 25px 30px;
   width: 90%;
-  max-width: 1000px;
-  background: rgba(15, 15, 25, 0.8);
-  border: 2px solid var(--neon-gold);
-  box-shadow: 0 0 40px var(--border-glow);
-  border-radius: 15px;
-  display: flex;
-  overflow: hidden;
-  backdrop-filter: blur(8px);
-}
-
-/* --- Left Robot Section --- */
-.email_login {
-  flex: 1;
-  padding: 30px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-h1 {
-  color: var(--neon-gold);
-  text-shadow: 0 0 10px var(--neon-gold);
+  max-width: 380px;
   text-align: center;
-  margin-bottom: 10px;
+  backdrop-filter: blur(5px);
 }
 
-p {
-  text-align: center;
-  color: #ccc;
-  margin-bottom: 25px;
-}
-
-/* --- Form --- */
-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-input {
-  width: 100%;
-  max-width: 350px;
-  padding: 12px 14px;
+/* title */
+.signup-container h2 {
+  color: var(--gold);
+  text-shadow: 0 0 10px var(--gold-glow);
   margin-bottom: 20px;
-  background-color: var(--input-bg);
-  border: 1px solid #4a4a4a;
-  color: var(--text-color);
-  border-radius: 6px;
-  outline: none;
-  font-size: 1em;
-  letter-spacing: 1px;
-  transition: all 0.3s ease;
+  letter-spacing: 2px;
 }
 
-input::placeholder {
-  color: rgba(245, 245, 245, 0.6);
-}
-
-input:focus {
-  border-color: var(--neon-gold);
-  box-shadow: 0 0 10px var(--neon-gold);
-}
-
-/* --- Button --- */
-button {
+/* inputs */
+.signup-container input {
   width: 100%;
-  max-width: 350px;
-  padding: 15px;
-  background-color: var(--neon-gold);
-  color: #111;
+  padding: 12px;
+  margin: 10px 0;
+  border: 1px solid rgba(255, 215, 0, 0.5);
+  border-radius: 6px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  font-size: 1em;
+  outline: none;
+  transition: box-shadow 0.3s, border 0.3s;
+}
+
+.signup-container input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 12px var(--gold-glow);
+}
+
+/* password toggle icons */
+.password-container {
+  position: relative;
+}
+
+.toggle-password {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+  user-select: none;
+}
+
+/* signup button */
+.signup-container button {
+  width: 100%;
+  padding: 14px;
+  background: var(--gold);
+  color: #000;
   font-weight: 700;
-  text-transform: uppercase;
   border: none;
   border-radius: 6px;
+  margin-top: 15px;
   cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 0 15px var(--border-glow);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 0 20px var(--gold-glow);
+  transition: all 0.3s;
 }
 
-button:hover {
-  background-color: #ffea70;
-  box-shadow: 0 0 25px var(--neon-gold);
+.signup-container button:hover {
+  box-shadow: 0 0 35px var(--gold-glow);
+  transform: scale(1.03);
 }
 
-/* --- Footer --- */
-a {
-  color: var(--neon-gold);
+/* footer link */
+.signup-container p {
+  margin-top: 15px;
+}
+
+.signup-container a {
+  color: var(--gold);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: bold;
 }
 
-a:hover {
-  text-decoration: underline;
-}
-
-.footer-links {
-  text-align: center;
-  margin-top: 20px;
-}
-
-/* --- Close Button --- */
-.close__btn {
-  position: absolute;
-  top: 10px;
-  right: 20px;
-  font-size: 2rem;
-  color: var(--neon-gold);
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-.close__btn:hover {
-  color: #fff;
-}
-
-/* --- Responsive --- */
-@media (max-width: 600px) {
-  input, button {
-    max-width: 100%;
-  }
+.signup-container a:hover {
+  text-shadow: 0 0 10px var(--gold-glow);
 }
