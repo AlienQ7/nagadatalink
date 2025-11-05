@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Profile - NagaSpace</title>
-  <!--<link rel="stylesheet" href="style.css" />-->
   <link rel="stylesheet" href="profile.css" />
 </head>
 <body>
@@ -19,9 +18,9 @@
       <button id="hamburger" class="hamburger-icon">&#9776;</button>
       <div id="dropdownMenu" class="dropdown-menu">
         <a href="index.html">Home</a>
-         <a href="#">About</a>
+        <a href="#">About</a>
         <button id="menuLogout">Logout</button>
-        <button id="menuDelete">Delete Account</button>
+        <button id="menuDelete" style="color:red;">Delete Account</button>
       </div>
     </div>
   </header>
@@ -32,7 +31,6 @@
       <h2>Your Profile</h2>
       <p><strong>Name:</strong> <span id="profileName">-</span></p>
       <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
-      <!--<p><strong>Joined:</strong> <span id="profileJoined">N/A</span></p>-->
     </div>
 
     <div class="profile-actions">
@@ -60,6 +58,7 @@
       const hamburger = document.getElementById("hamburger");
       const menuLogout = document.getElementById("menuLogout");
       const sellSection = document.getElementById("sellSection");
+      const menuDelete = document.getElementById("menuDelete");
 
       hamburger.addEventListener("click", () => {
         dropdownMenu.style.display = dropdownMenu.style.display === "flex" ? "none" : "flex";
@@ -83,6 +82,31 @@
       menuLogout.addEventListener("click", () => {
         localStorage.removeItem("user");
         window.location.href = "index.html";
+      });
+
+      // 🟥 DELETE ACCOUNT FEATURE
+      menuDelete.addEventListener("click", async () => {
+        const confirmDel = confirm("⚠️ Are you sure you want to delete your account? This cannot be undone!");
+        if (!confirmDel) return;
+
+        try {
+          const res = await fetch(`/api/auth?action=delete`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: user.email }),
+          });
+          const data = await res.json();
+
+          if (data.success) {
+            alert("✅ Your account has been deleted successfully.");
+            localStorage.removeItem("user");
+            window.location.href = "index.html";
+          } else {
+            alert("❌ Failed to delete account: " + (data.error || data.message || "Unknown error"));
+          }
+        } catch (err) {
+          alert("⚠️ Error deleting account. Please try again later.");
+        }
       });
 
       // Load user's ads
